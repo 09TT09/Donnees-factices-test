@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Générateur de données factices</title>
+  </head>
+
+  <body style="background-color: #1c1c1c; color: white">
+    <input
+      type="button"
+      value="Generer sexe"
+      onclick="genererEtImprimer(sexe)"
+    />
+    <input
+      type="button"
+      value="Generer statut"
+      onclick="genererEtImprimer(statut)"
+    />
+    <input
+      type="button"
+      value="Generer ville"
+      onclick="genererEtImprimer(ville)"
+    />
+    <input
+      type="button"
+      value="Generer produit"
+      onclick="genererEtImprimer(produit)"
+    />
+    <input
+      type="button"
+      value="Generer paiement"
+      onclick="genererEtImprimer(paiement)"
+    />
+    <input
+      type="button"
+      value="Generer quantité"
+      onclick="genererEtImprimer('quantite')"
+    />
+    <input
+      type="button"
+      value="Tableau complet de données"
+      onclick="genererEtImprimer(null, 'données')"
+    />
+
+    <span> - Nombre d'itération(s) : </span>
+    <input type="number" id="iteration" value="10" style="width: 100px" />
+
+    <div id="boiteDeGeneration"></div>
+
+    <script>
+      const sexe = ["Homme", "Femme", "Autre"];
+      const statut = ["membre", "membre premium"];
+      const ville = [
+        "Paris",
+        "Marseille",
+        "Lyon",
+        "Bordeaux",
+        "Lille",
+        "Toulouse",
+        "Nice",
+        "Nantes",
+        "Strasbourg",
+        "Monpellier",
+      ];
+      const produit = [
+        ["Paquet de piles", 5, 15],
+        ["Paquet de stylo", 3, 8],
+        ["Clé USB", 10, 30],
+        ["Ecouteurs", 20, 60],
+        ["Livre", 2, 30],
+        ["Assiette", 5, 20],
+        ["Jeu de société", 5, 30],
+        ["Paquet de colle", 2, 7],
+        ["Disqueuse", 50, 200],
+        ["Réfrigérateur", 100, 800],
+      ];
+      const paiement = [
+        "Carte bancaire",
+        "Espèce",
+        "Paiement en ligne via intermédiaire",
+      ];
+      let tableauCompletDonnees = [];
+
+      function genererEtImprimer(element, complement) {
+        nombreIterations = Math.floor(document.getElementById("iteration").value);
+        document.getElementById("boiteDeGeneration").innerHTML = "";
+        let listeGenereration = [];
+        tableauCompletDonnees = [];
+
+        // GENERATION DU SEXE
+        if (element === sexe || complement === "données") {
+          element = sexe;
+          for (let i = 0; i < nombreIterations; i++) {
+            let probabilites = (Math.random() * 1).toFixed(2);
+            if (probabilites <= 0.45) listeGenereration.push(element[0]);
+            else if (probabilites <= 0.9) listeGenereration.push(element[1]);
+            else listeGenereration.push(element[2]);
+            if (complement != "données"){
+              document.getElementById("boiteDeGeneration").innerHTML += `${listeGenereration[i]}<br>`;
+            }
+          }
+          tableauCompletDonnees.push(listeGenereration);
+          listeGenereration = [];
+        }
+
+        // GENERATION DU STATUT
+        if (element === statut || complement === "données") {
+          element = statut;
+          for (let i = 0; i < nombreIterations; i++) {
+            let probabilites = (Math.random() * 1).toFixed(2);
+            if (probabilites <= 0.7) listeGenereration.push(element[0]);
+            else listeGenereration.push(element[1]);
+            if (complement != "données"){
+              document.getElementById("boiteDeGeneration").innerHTML += `${listeGenereration[i]}<br>`;
+            }
+          }
+          tableauCompletDonnees.push(listeGenereration);
+          listeGenereration = [];
+        }
+
+        // GENERATION DE LA VILLE OU DU MODE DE PAIEMENT
+        if (element === ville || element === paiement || complement === "données") {
+          const tableauVillePaiement = [ville, paiement];
+          let thisValue = 0;
+          
+          if (element != paiement && complement != "données"){ element = ville; thisValue = 0; }
+          if (complement === "données"){ thisValue = 1; }
+
+          let x = 0;
+
+          while (x <= thisValue) {
+            if (complement === "données") { element = tableauVillePaiement[x]; }
+            for (let i = 0; i < nombreIterations; i++) {
+              let probabilites = Math.floor(Math.random() * element.length);
+              listeGenereration.push(element[probabilites]);
+              if (complement != "données"){
+                document.getElementById("boiteDeGeneration").innerHTML += `${listeGenereration[i]}<br>`;
+              }
+            }
+            console.log(tableauCompletDonnees);
+            tableauCompletDonnees.push(listeGenereration);
+            listeGenereration = [];
+            x++;
+          }
+        }
+
+        // GENERATION DU PRODUIT ET DE SON PRIX
+        if (element === produit || complement === "données") {
+          element = produit;
+          for (let i = 0; i < nombreIterations; i++) {
+            let probabilites = Math.floor(Math.random() * element.length);
+            let min = element[probabilites][1];
+            let max = element[probabilites][2];
+            let prix = (Math.random() * (max - min + 1) + min).toFixed(2);
+
+            listeGenereration.push([element[probabilites][0], prix]);
+            if (complement != "données"){
+              document.getElementById("boiteDeGeneration").innerHTML += `${listeGenereration[i][0]} - prix : ${listeGenereration[i][1]} €<br>`;
+            }
+          }
+          if (complement === "données"){
+            let tableauProduit = [];
+            let tableauPrix = [];
+            for (let y = 0; y < nombreIterations; y++){
+              tableauProduit.push(listeGenereration[y][0]);
+              tableauPrix.push(listeGenereration[y][1]);
+            }
+            tableauCompletDonnees.push(tableauProduit, tableauPrix);
+          }
+          listeGenereration = [];
+        }
+
+        // GENERATION QUANTITE (Courbe décroissante exponentielle : f(x) = 100 * ((1/2)^x) )
+        // Avec cette fonction, nous considérons qu'un acheteur à plus de chance de commander un seul,
+        // voire un petit lot d'un même objet qu'un lot volumineux d'objets
+        // (ex: 50% de chance qu'un client commande 1 livre et seulement 3.125% de chance qu'un client commande 5 livres)
+        if (element === "quantite" || complement === "données") {
+          element = "quantite"
+          for (let i = 0; i < nombreIterations; i++) {
+            const valeurInitiale = 100;
+            const constanteDeDecroissance = 0.5;
+            let iterationsEtQuantite = 1;
+            let oldFonctionCourbe = 0;
+            let probabilitesQuantite = (Math.random() * 100).toFixed(6);
+
+            function etablirQuantite() {
+              const fonctionCourbe = valeurInitiale * Math.pow(constanteDeDecroissance, iterationsEtQuantite);
+              if (fonctionCourbe <= probabilitesQuantite) {
+                listeGenereration.push(iterationsEtQuantite);
+                if (complement != "données"){
+                  document.getElementById("boiteDeGeneration").innerHTML += `${listeGenereration[i]}<br>`;
+                }
+              } else {
+                iterationsEtQuantite++;
+                oldFonctionCourbe += fonctionCourbe;
+                etablirQuantite();
+              }
+            }
+
+            etablirQuantite();
+          }
+          tableauCompletDonnees.push(listeGenereration);
+          listeGenereration = [];
+        }
+
+        if (complement === "données"){
+          document.getElementById("boiteDeGeneration").innerHTML += `<table><tbody id="tableauDeGeneration"></tbody></table>`;
+          for (let i = 0; i < nombreIterations; i++){
+            document.getElementById("tableauDeGeneration").innerHTML += `<tr id="tr-${i}"></tr>`;
+            for (let y = 0; y < tableauCompletDonnees.length; y++){
+              document.getElementById(`tr-${i}`).innerHTML += `<td>${tableauCompletDonnees[y][i]}</td>`
+            }
+          }
+          console.log(tableauCompletDonnees)
+        } else {
+          console.log(listeGenereration);
+        }
+      }
+    </script>
+  </body>
+</html>
